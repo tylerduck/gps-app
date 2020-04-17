@@ -116,21 +116,30 @@
         android:onClick="onNew"
         android:text="@string/newButton" />
 
-<!--    <TextView-->
-<!--        android:id="@+id/modeTag"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_below="@id/newButton"-->
-<!--        android:text="@string/mode"-->
-<!--        android:textSize="20sp"/>-->
+    <TextView
+        android:id="@+id/modeTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/newButton"
+        android:text="@string/mode"
+        android:textSize="20sp"/>
 
-<!--    <Spinner-->
-<!--        android:id="@+id/spinnerMode"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_below="@id/modeTag"-->
-<!--        android:layout_marginTop="5dp"-->
-<!--        android:textSize="20sp"-->
-<!--        android:padding="5dp"/>-->
+    <Spinner
+        android:id="@+id/spinnerMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/modeTag"
+        android:layout_marginTop="5dp"
+        android:padding="5dp"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinnerMode"
+        android:layout_marginTop="5dp"
+        android:onClick="onMap"
+        android:text="@string/map_it" />
 
 </RelativeLayout>

@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -13,6 +14,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -38,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private final static String TO = "to";
     private final static String TOLAT = "tolat";
     private final static String TOLONG = "tolong";
+    private final static String DRIVING = "d";
+    private final static String WALKING = "w";
+    private final static String BICYCLING = "b";
 
     private LocationManager locationManager = null;
 
@@ -48,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private double toLatitude = 0;
     private double toLongitude = 0;
     private String to = "";
-//    private int mode = DRIVING;
+    private String mode = DRIVING;
 
     private SharedPreferences settings = null;
 
@@ -104,33 +109,42 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
-//        /*
-//         * Set up the spinner
-//         */
-//
-//        // Create an ArrayAdapter using the string array and a default spinner layout
-//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-//                R.array.modes_spinner, android.R.layout.simple_spinner_item);
-//
-//        // Specify the layout to use when the list of choices appears
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//
-//        // Apply the adapter to the spinner
-//        getSpinner().setAdapter(adapter);
-//
-//        getSpinner().setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
-//
-//            @Override
-//            public void onItemSelected(AdapterView<?> arg0, View view,
-//                                       int pos, long id) {
-//
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> arg0) {
-//            }
-//
-//        });
+        /*
+         * Set up the spinner
+         */
+
+        mode = DRIVING;
+        Log.i("the mode", mode);
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.modes_spinner, android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        getSpinner().setAdapter(adapter);
+
+        getSpinner().setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View view,
+                                       int pos, long id) {
+                if (pos == 0) {
+                    mode = DRIVING;
+                } else if (pos == 1) {
+                    mode = WALKING;
+                } else {
+                    mode = BICYCLING;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+
+        });
     }
 
     /**
@@ -222,12 +236,12 @@ public class MainActivity extends AppCompatActivity {
         setUI();
     }
 
-//    /**
-////     * The hat choice spinner
-////     */
-////    private Spinner getSpinner() {
-////        return (Spinner) findViewById(R.id.spinnerMode);
-////    }
+    /**
+     * The hat choice spinner
+     */
+    private Spinner getSpinner() {
+        return (Spinner) findViewById(R.id.spinnerMode);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -284,6 +298,19 @@ public class MainActivity extends AppCompatActivity {
         EditText location = (EditText)findViewById(R.id.editLocation);
         final String address = location.getText().toString().trim();
         newAddress(address);
+    }
+
+    public void onMap(View view) {
+        String lat = String.format("%1$.8f", toLatitude);
+        String lon = String.format("%1$.8f", toLongitude);
+        Log.i("mode", mode);
+
+        String link = String.format("google.navigation:q=%1$s,%2$s&mode=%3$s",
+                                    lat, lon, mode);
+        Uri gmmIntentUri = Uri.parse(link);
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
     }
 
     private void newAddress(final String address) {
