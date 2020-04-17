@@ -7,4 +7,10 @@
     <string name="newButton">New</string>
     <string name="provider">Provider:</string>
     <string name="locHint">Enter location here</string>
+    <string name="mode">Default Mode:</string>
+    <string name="eb2250">2250 Engineering</string>
+    <string name="sparty">Sparty</string>
+    <string name="home">Home</string>
+    <string name="exception">Failed to communicate with geolocation services</string>
+    <string name="couldnotfind">Unable to locate address</string>
 </resources>

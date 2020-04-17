@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="modes_spinner">
+        <item >Driving</item>
+        <item >Walking</item>
+        <item >Bicycling</item>
+    </string-array>
+
+</resources>

@@ -7,7 +7,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,8 +17,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private double toLatitude = 0;
     private double toLongitude = 0;
     private String to = "";
+//    private int mode = DRIVING;
 
     private SharedPreferences settings = null;
 
@@ -87,6 +103,34 @@ public class MainActivity extends AppCompatActivity {
             // to handle the case where the user grants the permission.
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
+
+//        /*
+//         * Set up the spinner
+//         */
+//
+//        // Create an ArrayAdapter using the string array and a default spinner layout
+//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+//                R.array.modes_spinner, android.R.layout.simple_spinner_item);
+//
+//        // Specify the layout to use when the list of choices appears
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//
+//        // Apply the adapter to the spinner
+//        getSpinner().setAdapter(adapter);
+//
+//        getSpinner().setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+//
+//            @Override
+//            public void onItemSelected(AdapterView<?> arg0, View view,
+//                                       int pos, long id) {
+//
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> arg0) {
+//            }
+//
+//        });
     }
 
     /**
@@ -176,6 +220,133 @@ public class MainActivity extends AppCompatActivity {
         valid = true;
 
         setUI();
+    }
+
+//    /**
+////     * The hat choice spinner
+////     */
+////    private Spinner getSpinner() {
+////        return (Spinner) findViewById(R.id.spinnerMode);
+////    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+    }
+
+    /**
+     * Handle an options menu selection
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.itemSparty:
+                newTo("Sparty", 42.731138, -84.487508);
+                return true;
+
+            case R.id.itemHome:
+                newTo("Home", 42.2042772, -70.7165971);
+                return true;
+
+            case R.id.item2250:
+                newTo("2250 Engineering", 42.724303, -84.480507);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Handle setting a new "to" location.
+     * @param address Address to display
+     * @param lat latitude
+     * @param lon longitude
+     */
+    private void newTo(String address, double lat, double lon) {
+        to = address;
+        toLatitude = lat;
+        toLongitude = lon;
+
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(TO, address);
+        editor.putString(TOLAT, String.format("%1$.8f", lat));
+        editor.putString(TOLONG, String.format("%1$.8f", lon));
+        editor.apply();
+
+        setUI();
+    }
+
+    public void onNew(View view) {
+        EditText location = (EditText)findViewById(R.id.editLocation);
+        final String address = location.getText().toString().trim();
+        newAddress(address);
+    }
+
+    private void newAddress(final String address) {
+        if(address.equals("")) {
+            // Don't do anything if the address is blank
+            return;
+        }
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                lookupAddress(address);
+
+            }
+
+        }).start();
+    }
+
+    /**
+     * Look up the provided address. This works in a thread!
+     * @param address Address we are looking up
+     */
+    private void lookupAddress(final String address) {
+        Geocoder geocoder = new Geocoder(MainActivity.this, Locale.US);
+        boolean exception = false;
+        List<Address> locations;
+        try {
+            locations = geocoder.getFromLocationName(address, 1);
+        } catch(IOException ex) {
+            // Failed due to I/O exception
+            locations = null;
+            exception = true;
+        }
+
+        final boolean exceptionCopy = exception;
+        final List<Address> locationsCopy = locations;
+
+        this.runOnUiThread(new Runnable() {
+            public void run() {
+                newLocation(address, exceptionCopy, locationsCopy);
+            }
+        });
+    }
+
+    private void newLocation(String address, boolean exception, List<Address> locations) {
+
+        if(exception) {
+            Toast.makeText(MainActivity.this, R.string.exception, Toast.LENGTH_SHORT).show();
+        } else {
+            if(locations == null || locations.size() == 0) {
+                Toast.makeText(this, R.string.couldnotfind, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            EditText location = (EditText)findViewById(R.id.editLocation);
+            location.setText("");
+
+            // We have a valid new location
+            Address a = locations.get(0);
+            newTo(address, a.getLatitude(), a.getLongitude());
+
+        }
     }
 
 }

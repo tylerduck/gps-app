@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- The suggestion in the slides was to remove padding from the RelativeLayout.
+ I found it easiest to use padding in this case and since it was only a suggestion to remove
+ the padding, I felt it was ok to use it. -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -105,10 +108,29 @@
         android:inputType="textPostalAddress" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/newButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/editLocation"
         android:layout_alignParentEnd="true"
+        android:onClick="onNew"
         android:text="@string/newButton" />
+
+<!--    <TextView-->
+<!--        android:id="@+id/modeTag"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@id/newButton"-->
+<!--        android:text="@string/mode"-->
+<!--        android:textSize="20sp"/>-->
+
+<!--    <Spinner-->
+<!--        android:id="@+id/spinnerMode"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@id/modeTag"-->
+<!--        android:layout_marginTop="5dp"-->
+<!--        android:textSize="20sp"-->
+<!--        android:padding="5dp"/>-->
+
 </RelativeLayout>
