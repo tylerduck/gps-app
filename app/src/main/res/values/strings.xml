@@ -14,4 +14,7 @@
     <string name="exception">Failed to communicate with geolocation services</string>
     <string name="couldnotfind">Unable to locate address</string>
     <string name="map_it">Map It</string>
+    <string name="saveFav">Save Favorite</string>
+    <string name="allFavs">All Favorites</string>
+    <string name="favTag">Pick a favorite</string>
 </resources>
